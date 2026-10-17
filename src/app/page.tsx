@@ -80,7 +80,7 @@ export default async function HomePage() {
 
         {topItems.length > 0
           ? <Carousel items={topItems} />
-          : <p style={{ color: 'var(--fg-soft)', padding: '20px 0' }}>Sé el primero en subir una foto 📸</p>
+          : <p style={{ color: 'var(--fg-soft)', padding: '20px 0' }}>Sé el primero en subir una foto </p>
         }
 
         {/* ── Preview últimas fotos ── */}
