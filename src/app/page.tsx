@@ -13,7 +13,7 @@ import type { Upload } from '@/lib/supabase'
 import PreviewGrid from '@/components/PreviewGrid'
 
 // Revalidar cada 60s (ISR)
-export const revalidate = 60
+export const revalidate = 5
 
 async function getData() {
   // Top 5 para el carrusel

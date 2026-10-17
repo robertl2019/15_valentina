@@ -10,7 +10,7 @@ import GalleryGrid from '@/components/GalleryGrid'
 import BottomNav   from '@/components/BottomNav'
 import type { Upload } from '@/lib/supabase'
 
-export const revalidate = 30
+export const revalidate = 5
 
 async function getData() {
   const { data } = await supabase
