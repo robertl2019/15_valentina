@@ -73,6 +73,7 @@ export default function SubirPage() {
 
   const doUpload = async (f: File) => {
   setStatus('uploading'); setError('')
+  console.log('tipo:', f.type, 'ext:', f.name.split('.').pop())
   try {
     if (f.type.startsWith('video/')) {
       const ext = f.name.split('.').pop() ?? 'mp4'
