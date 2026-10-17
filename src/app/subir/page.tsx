@@ -72,21 +72,56 @@ export default function SubirPage() {
   }
 
   const doUpload = async (f: File) => {
-    setStatus('uploading'); setError('')
-    const form = new FormData()
-    form.append('file', f)
-    form.append('caption', caption)
-    form.append('categoria', cat)
-    const res = await fetch('/api/upload', { method: 'POST', body: form })
-    if (res.ok) {
-      setStatus('success')
-      setTimeout(() => router.push('/'), 1800)
+  setStatus('uploading'); setError('')
+  try {
+    if (f.type.startsWith('video/')) {
+      const ext = f.name.split('.').pop() ?? 'mp4'
+
+      // 1. Pedir URL firmada
+      const { url: presignUrl, key } = await fetch('/api/presign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ext, mimeType: f.type }),
+      }).then(r => r.json())
+
+      // 2. Subir directo a R2
+      await fetch(presignUrl, {
+        method: 'PUT',
+        body: f,
+        headers: { 'Content-Type': f.type },
+      })
+
+      // 3. Registrar en Supabase
+      const fileUrl = `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileUrl, caption, categoria: cat, tipo: 'video' }),
+      })
+      if (!res.ok) {
+        const { message } = await res.json()
+        setError(message ?? 'Error al subir.'); setStatus('error'); return
+      }
     } else {
-      const { message } = await res.json()
-      setError(message ?? 'Error al subir. Intenta de nuevo.')
-      setStatus('error')
+      // Fotos: flujo original
+      const form = new FormData()
+      form.append('file', f)
+      form.append('caption', caption)
+      form.append('categoria', cat)
+      const res = await fetch('/api/upload', { method: 'POST', body: form })
+      if (!res.ok) {
+        const { message } = await res.json()
+        setError(message ?? 'Error al subir.'); setStatus('error'); return
+      }
     }
+
+    setStatus('success')
+    setTimeout(() => router.push('/'), 1800)
+  } catch {
+    setError('Error de conexión. Intenta de nuevo.')
+    setStatus('error')
   }
+}
 
   const handleSubmit = async () => {
     if (!file) return
