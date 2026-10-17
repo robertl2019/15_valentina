@@ -11,6 +11,7 @@ import PhotoCard  from '@/components/PhotoCard'
 import BottomNav  from '@/components/BottomNav'
 import type { Upload } from '@/lib/supabase'
 import PreviewGrid from '@/components/PreviewGrid'
+import AutoRefresh from '@/components/AutoRefresh'
 
 // Revalidar cada 60s (ISR)
 export const revalidate = 5
@@ -99,6 +100,7 @@ export default async function HomePage() {
       </p>
 
       <BottomNav />
+      <AutoRefresh interval={5000} />
     </>
   )
 }
